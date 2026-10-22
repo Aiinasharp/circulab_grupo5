@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CircuLab · Biblioteca de las cosas UAB</title>
+<style>
+body{margin:0;background:#F2F4EF;color:#16262B;font:16px/1.5 "Segoe UI",Arial,sans-serif}
+main{max-width:900px;margin:0 auto;padding:24px 16px 40px}
+h1{font-size:2.4rem;margin:0}
+h2{margin:32px 0 8px;border-top:2px solid #16262B;padding-top:16px}
+.panel{background:#fff;border:1px solid #D5DAD3;border-radius:8px;padding:14px;overflow-x:auto}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
+.kpi{background:#fff;border:1px solid #D5DAD3;border-radius:8px;padding:12px}
+.kpi b{display:block;font-size:1.7rem;color:#0F6B5E}
+table{border-collapse:collapse;width:100%;min-width:520px}
+th,td{padding:6px 8px;text-align:center;border-bottom:1px solid #D5DAD3}
+th:first-child,td:first-child{text-align:left}
+.g{min-width:560px}
+.f{display:grid;grid-template-columns:200px repeat(10,1fr);align-items:center;border-bottom:1px solid #eee}
+.f span{font-size:.9rem;padding:4px 0}
+.f i{height:18px;background:transparent;border:2px solid #0F6B5E;border-radius:4px}
+.f i.c{background:#E6A400;border-color:#16262B}
+.s{text-align:center;color:#5B6B6E;font-size:.8rem}
+small{color:#5B6B6E}
+@media (max-width:640px){.kpis{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<main>
+<h1>CircuLab</h1>
+<p>Biblioteca de las cosas del Campus UAB · Grupo 5 · Gestión de Proyectos 2026/27</p>
+
+<div class="kpis">
+  <div class="kpi"><b>9 semanas</b>Duración esperada</div>
+  <div class="kpi"><b>10 semanas</b>Plazo objetivo</div>
+  <div class="kpi"><b>≈ 89 %</b>Probabilidad de plazo</div>
+  <div class="kpi"><b>A·C·D·H·I</b>Ruta crítica</div>
+</div>
+
+<h2>Gantt</h2>
+<div class="panel"><div class="g" id="gantt"></div>
+<small>Ámbar = ruta crítica · borde verde = actividad con holgura</small></div>
+
+<h2>Cálculo PERT (semanas)</h2>
+<div class="panel"><table id="tabla">
+<thead><tr><th>Actividad</th><th>Predec.</th><th>a</th><th>m</th><th>b</th><th>te</th><th>σ²</th><th>Holgura</th></tr></thead>
+<tbody></tbody></table></div>
+<p><small>te = (a + 4m + b) / 6 · σ² = ((b − a) / 6)² · σ del proyecto = 0,82 · z = (10 − 9) / 0,82 = 1,22 → P(T ≤ 10) ≈ 89 %</small></p>
+
+<h2>Préstamos de ejemplo</h2>
+<div class="kpis">
+  <div class="kpi"><b>30</b>Objetos</div>
+  <div class="kpi"><b>16</b>Socios</div>
+  <div class="kpi"><b>10</b>Préstamos abiertos</div>
+  <div class="kpi"><b style="color:#B3261E">2</b>Retrasados</div>
+</div>
+<p><small>Datos ficticios del curso. Fuente de las duraciones: estimaciones del grupo. Licencia: CC BY 4.0.</small></p>
+</main>
+
+<script>
+const ACT=[
+["A","Encuesta de necesidades","—",1,2,3,0,2,0],
+["B","Acuerdo con la UAB","—",2,3,10,0,4,1],
+["C","Campaña de recogida","A",1,3,5,2,5,0],
+["D","Inventario y fotos","C",1,2,3,5,7,0],
+["E","App con AppSheet","A",1,2,9,2,5,2],
+["F","Normas y voluntariado","B",1,1,1,4,5,2],
+["G","Adecuación del espacio","B",1,3,5,4,7,1],
+["H","Prueba piloto","D, E, F",1,1,1,7,8,0],
+["I","Inauguración","G, H",1,1,1,8,9,0]];
+// [id, nombre, predecesoras, a, m, b, inicio, fin, holgura]
+const f=n=>n.toFixed(2).replace(".",",");
+let h='<div class="f"><span></span>';
+for(let s=1;s<=10;s++)h+=`<span class="s">${s}</span>`;
+h+='</div>';
+ACT.forEach(x=>{
+  h+=`<div class="f"><span><b>${x[0]}</b> ${x[1]}</span>`;
+  for(let s=1;s<=10;s++){
+    h+=(s>x[6]&&s<=x[7])?`<i class="${x[8]===0?'c':''}"></i>`:'<span></span>';
+  }
+  h+='</div>';
+});
+document.getElementById("gantt").innerHTML=h;
+document.querySelector("#tabla tbody").innerHTML=ACT.map(x=>
+ `<tr><td><b>${x[0]}</b> ${x[1]}</td><td>${x[2]}</td><td>${x[3]}</td><td>${x[4]}</td><td>${x[5]}</td><td>${f((x[3]+4*x[4]+x[5])/6)}</td><td>${f(Math.pow((x[5]-x[3])/6,2))}</td><td>${x[8]}</td></tr>`).join("");
+</script>
+</body>
+</html>
